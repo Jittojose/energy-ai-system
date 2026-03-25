@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Energy &amp; Carbon Analytics Dashboard</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons (for subtle nav/iconography if needed) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --bg-page: #020617;
+            --bg-elevated: #020617;
+            --bg-card: rgba(15, 23, 42, 0.9);
+            --border-subtle: rgba(148, 163, 184, 0.25);
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --accent-soft: rgba(56, 189, 248, 0.18);
+            --accent-blue: #38bdf8;
+            --accent-red: #f97373;
+            --accent-green: #22c55e;
+            --card-radius: 1.2rem;
+            --transition-fast: 0.16s ease-out;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background:
+                radial-gradient(circle at top left, #0b1120 0, transparent 55%),
+                radial-gradient(circle at bottom right, #020617 0, transparent 60%),
+                linear-gradient(to bottom, #000000, #020617 60%, #020617 100%);
+            color: var(--text-main);
+        }
+
+        .navbar-dark {
+            background: rgba(15, 23, 42, 0.96);
+            backdrop-filter: blur(16px) saturate(140%);
+            border-bottom: 1px solid rgba(31, 41, 55, 0.85);
+        }
+
+        .navbar-brand {
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+        }
+
+        .navbar-subtitle {
+            font-size: 0.73rem;
+            color: var(--text-muted);
+        }
+
+        .nav-link {
+            color: var(--text-main) !important;
+            font-weight: 400;
+            font-size: 0.9rem;
+            transition: color var(--transition-fast);
+        }
+
+        .nav-link:hover {
+            color: var(--accent-blue) !important;
+        }
+
+        .nav-link.active {
+            color: var(--accent-blue) !important;
+            font-weight: 500;
+        }
+
+        main {
+            padding-top: 4.5rem; /* for fixed navbar */
+            padding-bottom: 2.5rem;
+        }
+
+        .page-container {
+            max-width: 1200px;
+        }
+
+        .page-heading {
+            margin-bottom: 1.75rem;
+        }
+
+        .page-title {
+            font-size: 1.4rem;
+            font-weight: 500;
+        }
+
+        .page-subtitle {
+            font-size: 0.86rem;
+            color: var(--text-muted);
+        }
+
+        .metric-card-wrapper {
+            position: relative;
+            border-radius: calc(var(--card-radius) + 1px);
+            padding: 1px;
+            background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.28), transparent 55%),
+                        radial-gradient(circle at bottom right, rgba(248, 113, 113, 0.26), transparent 55%);
+        }
+
+        .metric-card {
+            border-radius: var(--card-radius);
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.94));
+            border: 1px solid rgba(31, 41, 55, 0.9);
+            box-shadow:
+                0 18px 40px rgba(0, 0, 0, 0.85),
+                0 0 0 1px rgba(15, 23, 42, 0.95);
+            padding: 1.2rem 1.35rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+        }
+
+        .metric-card.energy {
+            border-color: rgba(56, 189, 248, 0.5);
+        }
+
+        .metric-card.carbon {
+            border-color: rgba(248, 113, 113, 0.5);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow:
+                0 22px 48px rgba(15, 23, 42, 0.98),
+                0 0 0 1px rgba(148, 163, 184, 0.4);
+        }
+
+        .metric-label {
+            font-size: 0.86rem;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-value {
+            font-size: 1.7rem;
+            font-weight: 500;
+            display: flex;
+            align-items: baseline;
+            gap: 0.35rem;
+        }
+
+        .metric-unit {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .metric-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            border-radius: 999px;
+            padding: 0.25rem 0.7rem;
+            font-size: 0.72rem;
+            margin-top: 0.4rem;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(55, 65, 81, 0.9);
+            color: var(--text-muted);
+        }
+
+        .dot-blue {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: var(--accent-blue);
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.9);
+        }
+
+        .dot-red {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: var(--accent-red);
+            box-shadow: 0 0 12px rgba(248, 113, 113, 0.9);
+        }
+
+        .dot-green {
+            width: 7px;
+            height: 7px;
+            border-radius: 999px;
+            background: var(--accent-green);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+        }
+
+        .card-analytics {
+            border-radius: var(--card-radius);
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            box-shadow:
+                0 18px 40px rgba(0, 0, 0, 0.88),
+                0 0 0 1px rgba(15, 23, 42, 0.9);
+            padding: 1.4rem 1.5rem 1.3rem;
+            height: 100%;
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+        }
+
+        .card-analytics:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 22px 48px rgba(15, 23, 42, 1),
+                0 0 0 1px rgba(148, 163, 184, 0.35);
+            border-color: rgba(148, 163, 184, 0.4);
+        }
+
+        .card-title-main {
+            font-size: 0.98rem;
+            font-weight: 500;
+        }
+
+        .card-subtitle-main {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .chart-wrapper {
+            margin-top: 1.3rem;
+            border-radius: 0.9rem;
+            padding: 0.8rem;
+            background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.11), transparent 55%),
+                        radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.09), transparent 55%),
+                        rgba(15, 23, 42, 0.98);
+            border: 1px solid rgba(31, 41, 55, 0.9);
+        }
+
+        .chart-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 0.9rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .back-link-wrapper {
+            margin-top: 2.1rem;
+            text-align: center;
+        }
+
+        .btn-outline-light-soft {
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.55);
+            background: transparent;
+            color: var(--text-main);
+            padding: 0.65rem 1.4rem;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+        }
+
+        .btn-outline-light-soft:hover,
+        .btn-outline-light-soft:focus-visible {
+            background: rgba(15, 23, 42, 0.95);
+            border-color: rgba(209, 213, 219, 0.9);
+            box-shadow: 0 14px 32px rgba(15, 23, 42, 0.9);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline-light-soft:active {
+            transform: translateY(0);
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.9);
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 260px !important;
+        }
+
+        @media (max-width: 767.98px) {
+            .metric-card {
+                padding: 1.05rem 1.1rem;
+            }
+
+            canvas {
+                height: 230px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Fixed Top Navigation -->
+    <nav class="navbar navbar-dark navbar-expand-lg fixed-top">
+        <div class="container-fluid px-3 px-md-4">
+            <a class="navbar-brand d-flex flex-column text-decoration-none" href="/">
+                <span>AI Energy &amp; Carbon Analytics</span>
+                <span class="navbar-subtitle">Scenario-based forecasting &middot; Data center operations</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/guide">How It Works</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container page-container px-3 px-md-4">
+            <header class="page-heading d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-2">
+                <div>
+                    <h1 class="page-title mb-1">Scenario outcome overview</h1>
+                    <p class="page-subtitle mb-0">Predicted energy and carbon performance for the selected data center scenario.</p>
+                </div>
+            </header>
+
+            <section class="row g-3 g-md-4 mb-3">
+                <!-- Energy Metric Card -->
+                <div class="col-12 col-md-6">
+                    <div class="metric-card-wrapper">
+                        <article class="metric-card energy">
+                            <div>
+                                <div class="metric-label">Predicted energy</div>
+                                <div class="metric-value" style="color: var(--accent-blue);">
+                                    <span>{{ energy }}</span>
+                                    <span class="metric-unit">kWh</span>
+                                </div>
+                            </div>
+                            <div class="metric-tag mt-2">
+                                <span class="dot-blue"></span>
+                                <span>Workload- and temperature-aware consumption</span>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+                <!-- Carbon Metric Card -->
+                <div class="col-12 col-md-6">
+                    <div class="metric-card-wrapper">
+                        <article class="metric-card carbon">
+                            <div>
+                                <div class="metric-label">Carbon emission</div>
+                                <div class="metric-value" style="color: var(--accent-red);">
+                                    <span>{{ carbon }}</span>
+                                    <span class="metric-unit">kg CO2</span>
+                                </div>
+                            </div>
+                            <div class="metric-tag mt-2">
+                                <span class="dot-red"></span>
+                                <span>Emissions associated with predicted energy use</span>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </section>
+<!-- AI Operational Recommendation Section -->
+            <section class="row g-3 g-md-4 mt-2">
+                <div class="col-12">
+                    <div class="metric-card-wrapper">
+                        <article class="metric-card" style="border-color: rgba(168, 85, 247, 0.5);">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <div class="metric-label">AI Operational Recommendation</div>
+                                    <div class="d-flex align-items-center gap-2 mt-2">
+                                        {% if recommendation.status == "High Carbon Risk" %}
+                                            <span class="badge" style="background-color: var(--accent-red); color: white; padding: 0.4rem 0.8rem; font-size: 0.75rem; font-weight: 500;">
+                                                <i class="bi bi-exclamation-triangle-fill me-1"></i>{{ recommendation.status }}
+                                            </span>
+                                        {% elif recommendation.status == "Moderate Energy Usage" %}
+                                            <span class="badge" style="background-color: #f59e0b; color: white; padding: 0.4rem 0.8rem; font-size: 0.75rem; font-weight: 500;">
+                                                <i class="bi bi-info-circle-fill me-1"></i>{{ recommendation.status }}
+                                            </span>
+                                        {% else %}
+                                            <span class="badge" style="background-color: var(--accent-green); color: white; padding: 0.4rem 0.8rem; font-size: 0.75rem; font-weight: 500;">
+                                                <i class="bi bi-check-circle-fill me-1"></i>{{ recommendation.status }}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div style="width: 10px; height: 10px; border-radius: 999px; background: #a855f7; box-shadow: 0 0 15px rgba(168, 85, 247, 0.9);"></div>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <h6 style="color: var(--text-muted); font-size: 0.85rem; font-weight: 400; margin-bottom: 0.8rem;">Recommended Actions:</h6>
+                                <ul class="list-unstyled mb-0">
+                                    {% for rec in recommendation.recommendations %}
+                                    <li class="d-flex align-items-start mb-2">
+                                        <i class="bi bi-chevron-right me-2" style="color: #a855f7; font-size: 0.75rem; margin-top: 0.25rem;"></i>
+                                        <span style="color: var(--text-main); font-size: 0.88rem; line-height: 1.4;">{{ rec }}</span>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            
+                            <div class="metric-tag mt-3">
+                                <span style="width: 8px; height: 8px; border-radius: 999px; background: #a855f7; box-shadow: 0 0 12px rgba(168, 85, 247, 0.9);"></span>
+                                <span>AI-powered operational guidance based on current metrics</span>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section class="row g-3 g-md-4 mt-2">
+                <div class="col-12 col-lg-6">
+                    <article class="card-analytics h-100" style="border-radius:1rem; border-color:rgba(148,163,184,0.35);">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h2 class="card-title-main mb-1">Explainable AI - Feature Impact Analysis</h2>
+                                <p class="card-subtitle-main mb-0">Relative contribution of input features to the forecasted outcome.</p>
+                            </div>
+                        </div>
+
+                        <div class="chart-wrapper mt-3">
+                            <canvas id="importanceChart"></canvas>
+                        </div>
+
+                        <div class="mt-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <span class="dot-blue"></span>
+                                    <span>High-impact drivers</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="dot-green"></span>
+                                    <span>Operational levers</span>
+                                </div>
+                            </div>
+                            <div class="text-end" style="font-size: 0.8rem; color: var(--text-muted);">
+                                <span>Most influential factor:&nbsp;</span>
+                                <span style="color: #e5e7eb; font-weight: 500;">{{ top_feature }}</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Scenario Comparison Card -->
+                <div class="col-12 col-lg-6">
+                    <article class="card-analytics h-100">
+                        <div class="d-flex justify-content-between align-items-start gap-3">
+                            <div>
+                                <h2 class="card-title-main mb-1">Scenario Energy &amp; Carbon Comparison</h2>
+                                <p class="card-subtitle-main mb-0">Contrast baseline, high-load, and optimized scenarios across key metrics.</p>
+                            </div>
+                        </div>
+
+                        <div class="chart-wrapper mt-3">
+                            <canvas id="comparisonChart"></canvas>
+                        </div>
+
+                        <div class="chart-legend mt-3">
+                            <div class="legend-item">
+                                <span class="dot-blue"></span>
+                                <span>Energy (kWh)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="dot-red"></span>
+                                <span>Carbon (kg CO2)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="dot-green"></span>
+                                <span>Optimized scenario emphasis</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="row g-3 g-md-4 mt-3">
+                <div class="col-12">
+                    <article class="card-analytics h-100">
+                        <div class="d-flex justify-content-between align-items-start gap-3">
+                            <div>
+                                <h2 class="card-title-main mb-1">Future Energy Forecast</h2>
+                                <p class="card-subtitle-main mb-0">15-day forward-looking energy forecast based on historical patterns.</p>
+                            </div>
+                        </div>
+
+                        <div class="chart-wrapper mt-3">
+                            <canvas id="forecastChart"></canvas>
+                        </div>
+
+                        <div class="chart-legend mt-3">
+                            <div class="legend-item">
+                                <span class="dot-blue"></span>
+                                <span>Predicted energy (kWh)</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3 p-3" style="background: rgba(15, 23, 42, 0.6); border-radius: 0.8rem; border: 1px solid rgba(148, 163, 184, 0.2);">
+                            <h6 style="color: var(--accent-blue); font-size: 0.9rem; font-weight: 500; margin-bottom: 0.5rem;">
+                                <i class="bi bi-cpu me-2"></i>AI Forecast Analysis
+                            </h6>
+                            <p style="color: var(--text-main); font-size: 0.85rem; line-height: 1.5; margin: 0;">
+                                {{ forecast_analysis }}
+                            </p>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <div class="back-link-wrapper">
+                <div class="d-flex flex-column flex-md-row justify-content-center align-items-center gap-3">
+                    <a href="/download-report" class="btn btn-outline-light-soft">
+                        <i class="bi bi-file-earmark-pdf"></i>
+                        <span>Download AI Energy Report (PDF)</span>
+                    </a>
+                    <a href="/" class="btn btn-outline-light-soft">
+                        <i class="bi bi-arrow-left"></i>
+                        <span>Run another simulation</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        const ctx = document.getElementById('importanceChart').getContext('2d');
+
+        const importanceChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [{% for feature in importance.keys() %}'{{ feature }}',{% endfor %}],
+                datasets: [{
+                    label: 'Feature Importance (%)',
+                    data: [{% for value in importance.values() %}{{ value }},{% endfor %}],
+                    backgroundColor: [
+                        'rgba(56, 189, 248, 0.85)',
+                        'rgba(34, 197, 94, 0.85)',
+                        'rgba(148, 163, 184, 0.85)'
+                    ],
+                    borderRadius: 6,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#9ca3af', font: { size: 11 } },
+                        grid: { display: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#9ca3af', font: { size: 11 } },
+                        grid: { color: 'rgba(55, 65, 81, 0.4)' }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <script>
+        const compCtx = document.getElementById('comparisonChart').getContext('2d');
+
+        const comparisonChart = new Chart(compCtx, {
+            type: 'bar',
+            data: {
+                labels: [{% for name in comparison.keys() %}'{{ name }}',{% endfor %}],
+                datasets: [
+                    {
+                        label: 'Energy (kWh)',
+                        data: [{% for val in comparison.values() %}{{ val.energy }},{% endfor %}],
+                        backgroundColor: 'rgba(56, 189, 248, 0.9)',
+                        borderRadius: 5,
+                        borderSkipped: false
+                    },
+                    {
+                        label: 'Carbon (kg CO2)',
+                        data: [{% for val in comparison.values() %}{{ val.carbon }},{% endfor %}],
+                        backgroundColor: 'rgba(248, 113, 113, 0.9)',
+                        borderRadius: 5,
+                        borderSkipped: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#9ca3af', font: { size: 11 } },
+                        grid: { display: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#9ca3af', font: { size: 11 } },
+                        grid: { color: 'rgba(55, 65, 81, 0.4)' }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <script>
+        const forecastCtx = document.getElementById('forecastChart').getContext('2d');
+
+        const forecastLabels = {{ forecast_dates | tojson }};
+        const forecastData = {{ forecast_values | tojson }};
+
+        const forecastChart = new Chart(forecastCtx, {
+            type: 'line',
+            data: {
+                labels: forecastLabels,
+                datasets: [{
+                    label: 'Predicted Energy (kWh)',
+                    data: forecastData,
+                    borderColor: 'rgba(56, 189, 248, 0.95)',
+                    backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                    borderWidth: 2,
+                    tension: 0.35,
+                    pointRadius: 3,
+                    pointBackgroundColor: 'rgba(56, 189, 248, 1)',
+                    pointHoverRadius: 4,
+                    fill: true,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    tooltip: {
+                        enabled: true,
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.parsed.y !== null ? context.parsed.y.toFixed(2) : '';
+                                return `Predicted Energy: ${value} kWh`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#9ca3af', font: { size: 11 } },
+                        grid: { display: false },
+                    },
+                    y: {
+                        beginAtZero: false,
+                        ticks: { color: '#9ca3af', font: { size: 11 } },
+                        grid: { color: 'rgba(55, 65, 81, 0.4)' },
+                    }
+                }
+            }
+        });
+    </script>
+
+    <footer class="mt-4 py-3 border-top" style="background-color:#020617; border-top-color:rgba(31,41,55,0.9)!important;">
+        <div class="container">
+            <div class="text-center text-muted small">
+                <div class="mb-1">
+                    <span class="fw-semibold text-light">Developed by Jitto Jose</span>
+                </div>
+                <div>MCA Final Year Project (2024–2026)</div>
+                <div>Department of Computer Applications</div>
+                <div>Federal Institute of Science and Technology (FISAT)</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

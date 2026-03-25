@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Data Center Energy & Carbon Forecasting</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --bg-primary: #050816;
+            --bg-secondary: #0b1020;
+            --card-bg: rgba(15, 23, 42, 0.85);
+            --border-glass: rgba(148, 163, 184, 0.35);
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --accent-gradient: linear-gradient(135deg, #22d3ee, #22c55e);
+            --accent-gradient-soft: linear-gradient(135deg, rgba(34, 211, 238, 0.18), rgba(34, 197, 94, 0.08));
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: var(--text-main);
+            background:
+                radial-gradient(circle at top left, #1f2937 0, transparent 55%),
+                radial-gradient(circle at bottom right, #111827 0, transparent 55%),
+                radial-gradient(circle at top right, #0f172a 0, transparent 45%),
+                var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            padding-top: 6.5rem;
+        }
+
+        .navbar-dark {
+            background: rgba(15, 23, 42, 0.96);
+            backdrop-filter: blur(16px) saturate(140%);
+            border-bottom: 1px solid rgba(31, 41, 55, 0.85);
+        }
+
+        .navbar-brand {
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            color: var(--text-main) !important;
+        }
+
+        .navbar-subtitle {
+            font-size: 0.73rem;
+            color: var(--text-muted);
+        }
+
+        .nav-link {
+            color: var(--text-main) !important;
+            font-weight: 400;
+            font-size: 0.9rem;
+            transition: color 0.16s ease-out;
+        }
+
+        .nav-link:hover {
+            color: #22d3ee !important;
+        }
+
+        .nav-link.active {
+            color: #22d3ee !important;
+            font-weight: 500;
+        }
+
+        .page-shell {
+            width: 100%;
+            max-width: 1120px;
+        }
+
+        .hero-header {
+            text-align: center;
+            margin-bottom: 2.25rem;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(148, 163, 184, 0.45);
+            box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.35), 0 18px 45px rgba(0, 0, 0, 0.65);
+            font-size: 0.78rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .hero-badge-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 999px;
+            background: var(--accent-gradient);
+            box-shadow: 0 0 12px rgba(34, 211, 238, 0.8);
+        }
+
+        .hero-title {
+            font-size: clamp(1.9rem, 2.3vw + 1.4rem, 2.7rem);
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            margin-top: 1.15rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .hero-title span {
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 0.98rem;
+            color: var(--text-muted);
+            max-width: 720px;
+            margin: 0.25rem auto 0;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            border-radius: 1.4rem;
+            border: 1px solid var(--border-glass);
+            box-shadow:
+                0 20px 45px rgba(0, 0, 0, 0.88),
+                0 0 0 1px rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(22px) saturate(140%);
+            -webkit-backdrop-filter: blur(22px) saturate(140%);
+            padding: 2.1rem 2rem 2rem;
+        }
+
+        @media (min-width: 992px) {
+            .glass-card {
+                padding: 2.4rem 2.6rem 2.3rem;
+            }
+        }
+
+        .card-header-row {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        @media (min-width: 992px) {
+            .card-header-row {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        .card-heading {
+            font-size: 1.15rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .card-heading-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 0.9rem;
+            background: var(--accent-gradient-soft);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #a5f3fc;
+        }
+
+        .card-metrics {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .metric-pill {
+            border-radius: 999px;
+            padding: 0.35rem 0.9rem;
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(75, 85, 99, 0.9);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
+        .metric-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: #22c55e;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+        }
+
+        .form-section-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.13em;
+            color: var(--text-muted);
+            margin-top: 1.75rem;
+            margin-bottom: 0.9rem;
+        }
+
+        .form-label {
+            font-size: 0.86rem;
+            font-weight: 500;
+            color: var(--text-main);
+            margin-bottom: 0.45rem;
+        }
+
+        .form-control,
+        .form-select {
+            background-color: rgba(15, 23, 42, 0.85);
+            border-radius: 0.9rem;
+            border: 1px solid rgba(55, 65, 81, 0.9);
+            color: var(--text-main);
+            font-size: 0.9rem;
+            padding: 0.65rem 0.9rem 0.65rem 2.5rem;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #22d3ee;
+            box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.15);
+            background-color: rgba(15, 23, 42, 0.98);
+            color: var(--text-main);
+        }
+
+        .form-text {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+        }
+
+        .field-wrapper {
+            position: relative;
+        }
+
+        .field-icon {
+            position: absolute;
+            left: 0.95rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 1rem;
+            pointer-events: none;
+        }
+
+        .btn-gradient {
+            border-radius: 999px;
+            border: none;
+            padding: 0.85rem 1.6rem;
+            font-size: 0.98rem;
+            font-weight: 500;
+            background-image: var(--accent-gradient);
+            color: #020617;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.55rem;
+            box-shadow:
+                0 12px 26px rgba(34, 197, 94, 0.38),
+                0 6px 16px rgba(15, 23, 42, 0.85);
+            transition: transform 0.16s ease-out, box-shadow 0.18s ease-out, filter 0.16s ease-out;
+        }
+
+        .btn-gradient:hover,
+        .btn-gradient:focus-visible {
+            transform: translateY(-1.5px) scale(1.01);
+            filter: brightness(1.03);
+            box-shadow:
+                0 16px 32px rgba(34, 211, 238, 0.45),
+                0 8px 22px rgba(15, 23, 42, 0.95);
+        }
+
+        .btn-gradient:active {
+            transform: translateY(0) scale(0.99);
+            box-shadow:
+                0 8px 16px rgba(15, 23, 42, 0.9);
+        }
+
+        .btn-gradient-icon {
+            font-size: 1.1rem;
+        }
+
+        .helper-note {
+            margin-top: 0.85rem;
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
+        .helper-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 999px;
+            background: #22d3ee;
+            box-shadow: 0 0 10px rgba(34, 211, 238, 0.9);
+        }
+
+        @media (max-width: 767.98px) {
+            body {
+                padding-top: 7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Fixed Top Navigation -->
+    <nav class="navbar navbar-dark navbar-expand-lg fixed-top">
+        <div class="container-fluid px-3 px-md-4">
+            <a class="navbar-brand d-flex flex-column text-decoration-none" href="/">
+                <span>AI Energy & Carbon Analytics</span>
+                <span class="navbar-subtitle">Scenario-based forecasting · Data center operations</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/guide">How It Works</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-shell mx-auto">
+        <header class="hero-header">
+            <div class="hero-badge">
+                <span class="hero-badge-dot"></span>
+                <span>Scenario-Based AI Forecasting</span>
+            </div>
+            <h1 class="hero-title mt-3 mb-1">
+                AI-Powered Data Center <span>Energy &amp; Carbon Forecasting</span>
+            </h1>
+            <p class="hero-subtitle">
+                Scenario-Based Energy &amp; Carbon Decision Support System for research-grade analysis of data center
+                workload, cooling strategies, and climate-aware operational planning.
+            </p>
+        </header>
+
+        <main>
+            <section class="glass-card">
+                <div class="card-header-row mb-3">
+                    <div class="card-heading">
+                        <div class="card-heading-icon">
+                            <i class="bi bi-cpu"></i>
+                        </div>
+                        Configure forecasting scenario
+                    </div>
+                    <div class="card-metrics">
+                        <div class="metric-pill">
+                            <span class="metric-dot"></span>
+                            <span>Energy &amp; carbon intensity-aware</span>
+                        </div>
+                        <div class="metric-pill">
+                            <i class="bi bi-clock-history"></i>
+                            <span>Short-term &amp; long-horizon planning</span>
+                        </div>
+                        <div class="metric-pill">
+                            <i class="bi bi-cloud-sun"></i>
+                            <span>Temperature &amp; climate sensitivity</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section-title">Input configuration</div>
+
+                <form action="/predict" method="post" class="row g-3 g-lg-4">
+                    <div class="col-12 col-lg-4">
+                        <label class="form-label" for="scenario">Scenario</label>
+                        <div class="field-wrapper">
+                            <span class="field-icon">
+                                <i class="bi bi-diagram-3"></i>
+                            </span>
+                            <select class="form-select" id="scenario" name="scenario">
+                                <option value="baseline">Baseline</option>
+                                <option value="high_load">High Load</option>
+                                <option value="optimized">Optimized</option>
+                            </select>
+                        </div>
+                        <div class="form-text mt-1">Compare current operations vs. stress and optimized strategies.</div>
+                    </div>
+
+                    <div class="col-12 col-lg-4">
+                        <label class="form-label" for="workload">Workload scale</label>
+                        <div class="field-wrapper">
+                            <span class="field-icon">
+                                <i class="bi bi-graph-up-arrow"></i>
+                            </span>
+                            <input type="number" step="0.1" class="form-control" id="workload" name="workload" value="1.0">
+                        </div>
+                        <div class="form-text mt-1">Use 1.0 for nominal load. Example: 1.1 ≈ +10% workload.</div>
+                    </div>
+
+                    <div class="col-12 col-lg-4">
+                        <label class="form-label" for="temperature">Temperature adjustment (°C)</label>
+                        <div class="field-wrapper">
+                            <span class="field-icon">
+                                <i class="bi bi-thermometer-half"></i>
+                            </span>
+                            <input type="number" step="0.1" class="form-control" id="temperature" name="temperature" value="0">
+                        </div>
+                        <div class="form-text mt-1">Capture the impact of ambient / supply air temperature shifts.</div>
+                    </div>
+
+                    <div class="col-12 mt-3">
+                        <div class="d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-md-between gap-3">
+                            <div class="helper-note">
+                                <span class="helper-dot"></span>
+                                <span>Outputs provide energy and carbon forecasts suitable for academic and operational reporting.</span>
+                            </div>
+                            <button type="submit" class="btn btn-gradient w-100 w-md-auto">
+                                <span>Run AI Forecast</span>
+                                <span class="btn-gradient-icon"><i class="bi bi-arrow-right-circle"></i></span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

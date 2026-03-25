@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How It Works - AI Energy & Carbon Analytics</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --bg-page: #020617;
+            --bg-elevated: #020617;
+            --bg-card: rgba(15, 23, 42, 0.9);
+            --border-subtle: rgba(148, 163, 184, 0.25);
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --accent-soft: rgba(56, 189, 248, 0.18);
+            --accent-blue: #38bdf8;
+            --accent-green: #22c55e;
+            --card-radius: 1.2rem;
+            --transition-fast: 0.16s ease-out;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background:
+                radial-gradient(circle at top left, #0b1120 0, transparent 55%),
+                radial-gradient(circle at bottom right, #020617 0, transparent 60%),
+                linear-gradient(to bottom, #000000, #020617 60%, #020617 100%);
+            color: var(--text-main);
+        }
+
+        .navbar-dark {
+            background: rgba(15, 23, 42, 0.96);
+            backdrop-filter: blur(16px) saturate(140%);
+            border-bottom: 1px solid rgba(31, 41, 55, 0.85);
+        }
+
+        .navbar-brand {
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+        }
+
+        .navbar-subtitle {
+            font-size: 0.73rem;
+            color: var(--text-muted);
+        }
+
+        .nav-link {
+            color: var(--text-main) !important;
+            font-weight: 400;
+            font-size: 0.9rem;
+            transition: color var(--transition-fast);
+        }
+
+        .nav-link:hover {
+            color: var(--accent-blue) !important;
+        }
+
+        .nav-link.active {
+            color: var(--accent-blue) !important;
+            font-weight: 500;
+        }
+
+        main {
+            padding-top: 5rem;
+            padding-bottom: 2.5rem;
+        }
+
+        .page-container {
+            max-width: 1200px;
+        }
+
+        .page-heading {
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .guide-card {
+            border-radius: var(--card-radius);
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            box-shadow:
+                0 18px 40px rgba(0, 0, 0, 0.88),
+                0 0 0 1px rgba(15, 23, 42, 0.9);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+        }
+
+        .guide-card:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 22px 48px rgba(15, 23, 42, 1),
+                0 0 0 1px rgba(148, 163, 184, 0.35);
+        }
+
+        .guide-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent-soft);
+            color: var(--accent-blue);
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .guide-title {
+            font-size: 1.3rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+
+        .guide-description {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .guide-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .guide-features li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        .guide-features i {
+            color: var(--accent-green);
+            margin-right: 0.75rem;
+            margin-top: 0.1rem;
+            font-size: 0.85rem;
+        }
+
+        .tech-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 999px;
+            font-size: 0.8rem;
+            color: var(--accent-blue);
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 767.98px) {
+            .guide-card {
+                padding: 1.5rem;
+            }
+            
+            .page-title {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Fixed Top Navigation -->
+    <nav class="navbar navbar-dark navbar-expand-lg fixed-top">
+        <div class="container-fluid px-3 px-md-4">
+            <a class="navbar-brand d-flex flex-column text-decoration-none" href="/">
+                <span>AI Energy & Carbon Analytics</span>
+                <span class="navbar-subtitle">Scenario-based forecasting · Data center operations</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/guide">How It Works</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container page-container px-3 px-md-4">
+            <header class="page-heading">
+                <h1 class="page-title">How It Works</h1>
+                <p class="page-subtitle">
+                    Understanding the architecture and workflow of our AI-powered energy and carbon forecasting system.
+                </p>
+            </header>
+
+            <section class="guide-card">
+                <div class="guide-number">1</div>
+                <h2 class="guide-title">User Input Module</h2>
+                <p class="guide-description">
+                    The system begins with user-defined scenario parameters that form the foundation for energy and carbon predictions. 
+                    This module captures operational variables and environmental conditions that influence data center energy consumption patterns.
+                </p>
+                <ul class="guide-features">
+                    <li><i class="bi bi-check-circle-fill"></i> Scenario selection (Baseline, High Load, Optimized configurations)</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Workload scaling factor for computational demand adjustment</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Temperature adjustment parameters for climate sensitivity analysis</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Input validation and normalization for model compatibility</li>
+                </ul>
+                <div class="mt-3">
+                    <span class="tech-badge">HTML Forms</span>
+                    <span class="tech-badge">Bootstrap UI</span>
+                    <span class="tech-badge">Input Validation</span>
+                </div>
+            </section>
+
+            <section class="guide-card">
+                <div class="guide-number">2</div>
+                <h2 class="guide-title">Scenario Engine</h2>
+                <p class="guide-description">
+                    The Scenario Engine processes user inputs to generate comprehensive operational scenarios. It transforms abstract parameters 
+                    into concrete data center configurations that serve as input for machine learning models.
+                </p>
+                <ul class="guide-features">
+                    <li><i class="bi bi-check-circle-fill"></i> Baseline operational profile extraction from historical data</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Dynamic scenario generation based on user-defined parameters</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Feature engineering for square footage, server count, and temperature</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Scenario-specific parameter adjustment and optimization</li>
+                </ul>
+                <div class="mt-3">
+                    <span class="tech-badge">Python</span>
+                    <span class="tech-badge">Data Processing</span>
+                    <span class="tech-badge">Feature Engineering</span>
+                </div>
+            </section>
+
+            <section class="guide-card">
+                <div class="guide-number">3</div>
+                <h2 class="guide-title">Machine Learning Prediction (Random Forest)</h2>
+                <p class="guide-description">
+                    A trained Random Forest regression model provides accurate energy consumption predictions based on historical patterns 
+                    and scenario-specific features. The ensemble learning approach ensures robust and reliable forecasting capabilities.
+                </p>
+                <ul class="guide-features">
+                    <li><i class="bi bi-check-circle-fill"></i> Supervised learning on historical energy consumption data</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Ensemble of decision trees for improved prediction accuracy</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Feature importance analysis for model interpretability</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Real-time inference for scenario-based energy forecasting</li>
+                </ul>
+                <div class="mt-3">
+                    <span class="tech-badge">Random Forest</span>
+                    <span class="tech-badge">Scikit-Learn</span>
+                    <span class="tech-badge">Regression Analysis</span>
+                </div>
+            </section>
+
+            <section class="guide-card">
+                <div class="guide-number">4</div>
+                <h2 class="guide-title">Carbon Emission Estimation</h2>
+                <p class="guide-description">
+                    The Carbon Engine converts energy consumption predictions into equivalent carbon dioxide emissions using established 
+                    emission factors. This transformation enables comprehensive environmental impact assessment of data center operations.
+                </p>
+                <ul class="guide-features">
+                    <li><i class="bi bi-check-circle-fill"></i> Energy-to-carbon conversion using regional emission factors</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Grid carbon intensity consideration for accurate calculations</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Real-time carbon footprint estimation based on energy predictions</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Environmental impact quantification for sustainability reporting</li>
+                </ul>
+                <div class="mt-3">
+                    <span class="tech-badge">Carbon Accounting</span>
+                    <span class="tech-badge">Emission Factors</span>
+                    <span class="tech-badge">Environmental Metrics</span>
+                </div>
+            </section>
+
+            <section class="guide-card">
+                <div class="guide-number">5</div>
+                <h2 class="guide-title">Explainable AI (Feature Importance)</h2>
+                <p class="guide-description">
+                    The XAI Engine provides transparency into model predictions by analyzing feature importance and identifying key drivers 
+                    of energy consumption. This enables stakeholders to understand the factors influencing forecasted outcomes.
+                </p>
+                <ul class="guide-features">
+                    <li><i class="bi bi-check-circle-fill"></i> SHAP (SHapley Additive exPlanations) for model interpretability</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Feature contribution analysis for prediction decomposition</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Visual representation of feature importance rankings</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Identification of most influential operational parameters</li>
+                </ul>
+                <div class="mt-3">
+                    <span class="tech-badge">SHAP</span>
+                    <span class="tech-badge">Model Interpretability</span>
+                    <span class="tech-badge">Feature Analysis</span>
+                </div>
+            </section>
+
+            <section class="guide-card">
+                <div class="guide-number">6</div>
+                <h2 class="guide-title">Future Forecasting (Prophet Model)</h2>
+                <p class="guide-description">
+                    The Prophet time series forecasting model generates forward-looking energy consumption predictions based on historical 
+                    patterns and trends. This capability supports long-term planning and resource allocation decisions.
+                </p>
+                <ul class="guide-features">
+                    <li><i class="bi bi-check-circle-fill"></i> Time series decomposition for trend and seasonality analysis</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Automatic detection of seasonal patterns and holidays</li>
+                    <li><i class="bi bi-check-circle-fill"></i> Uncertainty quantification for prediction intervals</li>
+                    <li><i class="bi bi-check-circle-fill"></i> 15-day forward forecasting for operational planning</li>
+                </ul>
+                <div class="mt-3">
+                    <span class="tech-badge">Prophet</span>
+                    <span class="tech-badge">Time Series</span>
+                    <span class="tech-badge">Forecasting</span>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
