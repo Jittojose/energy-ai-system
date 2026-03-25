@@ -4,4 +4,8 @@ pandas
 numpy
 scikit-learn
 matplotlib
+seaborn
 prophet
+plotly
+reportlab
+gunicorn
